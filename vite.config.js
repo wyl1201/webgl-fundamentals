@@ -27,5 +27,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [commonjs()],
+  plugins: [commonjs({})],
 })
