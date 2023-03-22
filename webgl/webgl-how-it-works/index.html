@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>WebGL 工作原理</title>
   </head>
   <body>
     <canvas id="canvas"></canvas>
@@ -17,8 +17,9 @@
         <div id="scaleY"></div>
       </div>
     </div>
-    <script id="vertex-shader-2d" type="notjs">
+    <script id="vertex-shader-2d" type="x-shader/x-vertex">
       attribute vec2 a_position;
+      attribute vec4 a_color;
 
       uniform mat3 u_matrix;
 
@@ -26,10 +27,10 @@
 
       void main() {
         gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
-        v_color = gl_Position * 0.5 + 0.5;
+        v_color = a_color;
       }
     </script>
-    <script id="fragment-shader-2d" type="notjs">
+    <script id="fragment-shader-2d" type="x-shader/x-fragment">
       precision mediump float;
       varying vec4 v_color;
 

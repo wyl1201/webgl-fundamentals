@@ -1,5 +1,3 @@
-import { createProgram } from '../../utils/program'
-import { createShader } from '../../utils/shader'
 import webglUtils from '../../utils/webgl-utils'
 import m3 from '../../utils/m3'
 import webglLessonsUI from '../../utils/webgl-lessons-ui'
@@ -14,42 +12,68 @@ const canvas = document.querySelector('#canvas')
  */
 const gl = canvas.getContext('webgl')
 
-// 创建着色器
-const vertexShaderSource =
-  document.querySelector('#vertex-shader-2d').textContent
-const fragmentShaderSource = document.querySelector(
-  '#fragment-shader-2d'
-).textContent
-const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
-const fragmentShader = createShader(
-  gl,
-  gl.FRAGMENT_SHADER,
-  fragmentShaderSource
-)
-
 // 创建着色程序
-const program = createProgram(gl, vertexShader, fragmentShader)
-gl.useProgram(program)
+const program = webglUtils.createProgramFromScripts(gl, [
+  'vertex-shader-2d',
+  'fragment-shader-2d',
+])
 
-// 将数据存入缓冲区
-// const positions = [0, 0, 0, 0.5, 0.7, 0]
-const positions = [0, -100, 150, 125, -175, 100]
+// look up where vertex data need to go
+const positionLocation = gl.getAttribLocation(program, 'a_position')
+const colorLocation = gl.getAttribLocation(program, 'a_color')
+
+// look up uniforms
+const matrixLocation = gl.getUniformLocation(program, 'u_matrix')
+
+// create a buffer for the positions
 const positionBuffer = gl.createBuffer()
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Float32Array([
+    -150, -100, 150, -100, -150, 100, 150, -100, -150, 100, 150, 100,
+  ]),
+  gl.STATIC_DRAW
+)
 
-// 将缓冲区数据读取到 GPU 中
-const positionAttributeLocation = gl.getAttribLocation(program, 'a_position')
-gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0)
-gl.enableVertexAttribArray(positionAttributeLocation)
+// create a buffer for the colors
+const colorBuffer = gl.createBuffer()
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
+gl.bufferData(
+  gl.ARRAY_BUFFER,
+  new Float32Array([
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    1,
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    1,
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    1,
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    1,
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    1,
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    1,
+  ]),
+  gl.STATIC_DRAW
+)
 
 // 矩阵变化初始值
 const translation = [200, 150]
 let angleInRadians = 0
 const scale = [1, 1]
-
-// lookup uniforms
-const matrixLocation = gl.getUniformLocation(program, 'u_matrix')
 
 // 执行着色器程序完成绘制
 drawScene()
@@ -60,6 +84,39 @@ function drawScene() {
   webglUtils.resizeCanvasToDisplaySize(gl.canvas)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 
+  // 清空画布
+  gl.clearColor(0, 0, 0, 0)
+  gl.clear(gl.COLOR_BUFFER_BIT)
+
+  // tell ir to use our program  (pair of shaders)
+  gl.useProgram(program)
+
+  // 激活位置属性
+  gl.enableVertexAttribArray(positionLocation)
+  // 绑定位置缓冲区
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+  // 告诉显卡从当前绑定的缓冲区（bindBuffer() 指定的缓冲区）中读取顶点数据
+  let size = 2,
+    type = gl.FLOAT,
+    normalize = false,
+    stride = 0,
+    offset = 0
+  gl.vertexAttribPointer(
+    positionLocation,
+    size,
+    type,
+    normalize,
+    stride,
+    offset
+  )
+
+  // 激活颜色属性
+  gl.enableVertexAttribArray(colorLocation)
+  // 绑定颜色缓存
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
+  // 告诉显卡从当前绑定的缓冲区（bindBuffer() 指定的缓冲区）中读取颜色数据
+  gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 0, 0)
+
   // 计算变化矩阵
   let matrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight)
   matrix = m3.translate(matrix, translation[0], translation[1])
@@ -67,14 +124,11 @@ function drawScene() {
   matrix = m3.scale(matrix, scale[0], scale[1])
   // set matrixLocation
   gl.uniformMatrix3fv(matrixLocation, false, matrix)
-  // 清空画布
-  gl.clearColor(0, 0, 0, 0)
-  gl.clear(gl.COLOR_BUFFER_BIT)
 
+  // 绘制集合图形
   const primitiveType = gl.TRIANGLES
-  const offset = 0
-  const count = positions.length / 2
-  gl.drawArrays(primitiveType, offset, count)
+  const count = 6
+  gl.drawArrays(primitiveType, 0, count)
 }
 
 // Setup a ui.
