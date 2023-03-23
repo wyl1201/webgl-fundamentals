@@ -24,6 +24,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         ...getInput('webgl'),
+        ...getInput('mapbox'),
       },
     },
   },
