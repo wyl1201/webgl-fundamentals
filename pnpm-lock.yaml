@@ -7,6 +7,7 @@ specifiers:
   '@luma.gl/gltools': ^8.5.18
   '@luma.gl/webgl': ^8.5.18
   mapbox-gl: ^2.13.0
+  three: ^0.150.1
   vite: ^4.2.0
   vite-plugin-commonjs: ^0.6.2
 
@@ -17,6 +18,7 @@ dependencies:
   '@luma.gl/gltools': 8.5.18
   '@luma.gl/webgl': 8.5.18
   mapbox-gl: 2.13.0
+  three: 0.150.1
 
 devDependencies:
   vite: 4.2.0
@@ -800,6 +802,10 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
+
+  /three/0.150.1:
+    resolution: {integrity: sha512-5C1MqKUWaHYo13BX0Q64qcdwImgnnjSOFgBscOzAo8MYCzEtqfQqorEKMcajnA3FHy1yVlIe9AmaMQ0OQracNA==}
+    dev: false
 
   /through/2.3.4:
     resolution: {integrity: sha512-DwbmSAcABsMazNkLOJJSLRC3gfh4cPxUxJCn9npmvbcI6undhgoJ2ShvEOgZrW8BH62Gyr9jKboGbfFcmY5VsQ==}

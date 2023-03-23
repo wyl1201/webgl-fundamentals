@@ -18,6 +18,7 @@
     "@luma.gl/engine": "^8.5.18",
     "@luma.gl/gltools": "^8.5.18",
     "@luma.gl/webgl": "^8.5.18",
-    "mapbox-gl": "^2.13.0"
+    "mapbox-gl": "^2.13.0",
+    "three": "^0.150.1"
   }
 }
