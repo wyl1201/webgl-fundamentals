@@ -13,11 +13,11 @@
     "vite-plugin-commonjs": "^0.6.2"
   },
   "dependencies": {
-    "@luma.gl/core": "^8.5.18",
-    "@luma.gl/debug": "^8.5.18",
-    "@luma.gl/engine": "^8.5.18",
-    "@luma.gl/gltools": "^8.5.18",
-    "@luma.gl/webgl": "^8.5.18",
+    "@luma.gl/core": "^8.5.19",
+    "@luma.gl/debug": "^8.5.19",
+    "@luma.gl/engine": "^8.5.19",
+    "@luma.gl/gltools": "^8.5.19",
+    "@luma.gl/webgl": "^8.5.19",
     "mapbox-gl": "^2.13.0",
     "three": "^0.150.1"
   }
