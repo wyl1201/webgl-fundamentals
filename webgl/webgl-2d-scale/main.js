@@ -22,6 +22,7 @@ const positionLocation = gl.getAttribLocation(program, 'a_position')
 
 // look up uniforms
 const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution')
+const scaleUniformLocation = gl.getUniformLocation(program, 'u_scale')
 const rotationUniformLocation = gl.getUniformLocation(program, 'u_rotation')
 const translationUniformLocation = gl.getUniformLocation(
   program,
@@ -33,8 +34,9 @@ const positionBuffer = gl.createBuffer()
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 setGeometry(gl)
 
-const translation = [0, 0]
+const scale = [1, 1]
 const rotation = [0, 1]
+const translation = [0, 0]
 const color = [Math.random(), Math.random(), Math.random(), 1]
 
 drawScene()
@@ -49,6 +51,22 @@ webglLessonsUI.setupSlider('#y', {
   max: gl.canvas.height,
 })
 webglLessonsUI.setupSlider('#angle', { slide: updateAngle, max: 360 })
+webglLessonsUI.setupSlider('#scaleX', {
+  value: scale[0],
+  slide: updateScale(0),
+  min: -5,
+  max: 5,
+  step: 0.01,
+  precision: 2,
+})
+webglLessonsUI.setupSlider('#scaleY', {
+  value: scale[1],
+  slide: updateScale(1),
+  min: -5,
+  max: 5,
+  step: 0.01,
+  precision: 2,
+})
 
 function drawScene() {
   // 调整画布（canvas）的尺寸以匹配它的显示尺寸
@@ -78,6 +96,7 @@ function drawScene() {
 
   // 设置全局变量
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height)
+  gl.uniform2fv(scaleUniformLocation, scale)
   gl.uniform2fv(rotationUniformLocation, rotation)
   gl.uniform2fv(translationUniformLocation, translation)
   gl.uniform4fv(colorUniformLocation, color)
@@ -101,6 +120,13 @@ function updateAngle(event, ui) {
   rotation[0] = Math.sin(angleInRadians)
   rotation[1] = Math.cos(angleInRadians)
   drawScene()
+}
+
+function updateScale(index) {
+  return function (event, ui) {
+    scale[index] = ui.value
+    drawScene()
+  }
 }
 
 // 在缓冲存储构成 'F' 的值
