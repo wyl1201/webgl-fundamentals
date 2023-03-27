@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebGL 二维矩阵</title>
+    <title>WebGL 三维正射投影</title>
     <style>
       body {
         margin: 0;
@@ -27,16 +27,16 @@
         <div id="scaleY"></div>
       </div>
     </div>
-    <script id="vertex-shader-2d" type="x-shader/x-vertex">
-      attribute vec2 a_position;
-      uniform mat3 u_matrix;
+    <script id="vertex-shader-3d" type="x-shader/x-vertex">
+      attribute vec4 a_position;
+      uniform mat4 u_matrix;
 
       void main() {
-        vec2 position = (u_matrix * vec3(a_position, 1)).xy;
-        gl_Position = vec4(position, 0, 1);
+        vec4 position = u_matrix * a_position;
+        gl_Position = position;
       }
     </script>
-    <script id="fragment-shader-2d" type="x-shader/x-fragment">
+    <script id="fragment-shader-3d" type="x-shader/x-fragment">
       precision mediump float;
       uniform vec4 u_color;
 
