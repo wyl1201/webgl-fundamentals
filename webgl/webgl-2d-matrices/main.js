@@ -46,7 +46,7 @@ webglLessonsUI.setupSlider('#y', {
   slide: updatePosition(1),
   max: gl.canvas.height,
 })
-webglLessonsUI.setupSlider('#angle', { slide: updateAngle, max: 360 })
+webglLessonsUI.setupSlider('#angle', {slide: updateAngle, max: 360})
 webglLessonsUI.setupSlider('#scaleX', {
   value: scale[0],
   slide: updateScale(0),
@@ -104,18 +104,18 @@ function drawScene() {
   let matrix = m3.identity()
 
   // for (let i = 0; i < 5; i++) {
-    // 矩阵相乘
-    matrix = m3.multiply(matrix, projectionMatrix)
-    matrix = m3.multiply(matrix, translationMatrix)
-    matrix = m3.multiply(matrix, rotationMatrix)
-    matrix = m3.multiply(matrix, scaleMatrix)
-    // 设置矩阵
-    gl.uniformMatrix3fv(matrixUniformLocation, false, matrix)
+  // 矩阵相乘
+  matrix = m3.multiply(matrix, projectionMatrix)
+  matrix = m3.multiply(matrix, translationMatrix)
+  matrix = m3.multiply(matrix, rotationMatrix)
+  matrix = m3.multiply(matrix, scaleMatrix)
+  // 设置矩阵
+  gl.uniformMatrix3fv(matrixUniformLocation, false, matrix)
 
-    // 绘制
-    const primitiveType = gl.TRIANGLES
-    const count = 18 // 6 triangles in the 'F', 3 points per triangle
-    gl.drawArrays(primitiveType, 0, count)
+  // 绘制
+  const primitiveType = gl.TRIANGLES
+  const count = 18 // 6 triangles in the 'F', 3 points per triangle
+  gl.drawArrays(primitiveType, 0, count)
   // }
 }
 
