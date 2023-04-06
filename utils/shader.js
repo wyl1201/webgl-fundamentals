@@ -1,18 +1,23 @@
 /**
+ * Compiles and returns a shader object.
  *
- * @param {WebGL2RenderingContext} gl 渲染上下文
- * @param {GLenum} type 着色器类型
- * @param {string} source 数据源
- * @returns {WebGLShader} 着色器
+ * @param {WebGL2RenderingContext} gl - The rendering context.
+ * @param {GLenum} type - The type of shader to be created.
+ * @param {string} source - The shader source code.
+ * @returns {WebGLShader} - The compiled shader object.
+ * @throws {Error} - If shader compilation fails.
  */
 export function createShader(gl, type, source) {
-  const shader = gl.createShader(type) // 创建着色器对象
-  gl.shaderSource(shader, source) // 提供数据源
-  gl.compileShader(shader) // 编译 -> 生成着色器
-  const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
-  if (success) {
-    return shader
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    const errorMsg = `An error occurred while compiling the shader:\n${gl.getShaderInfoLog(shader)}`;
+    gl.deleteShader(shader);
+    throw new Error(errorMsg);
   }
-  console.log(gl.getShaderInfoLog(shader))
-  gl.deleteShader(shader)
+
+  return shader;
 }
+

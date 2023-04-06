@@ -23,6 +23,7 @@ const positionLocation = gl.getAttribLocation(program, 'a_position')
 const colorLocation = gl.getAttribLocation(program, 'a_color')
 // look up uniforms
 const matrixUniformLocation = gl.getUniformLocation(program, 'u_matrix')
+const fudgeLocation = gl.getUniformLocation(program, 'u_fudgeFactor')
 
 const positionBuffer = gl.createBuffer()
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
@@ -44,6 +45,7 @@ const translation = [45, 150, 0]
 const rotation = [degToRad(40), degToRad(25), degToRad(325)]
 const scale = [1, 1, 1]
 const color = [Math.random(), Math.random(), Math.random(), 1]
+const fudgeFactor = 1
 
 drawScene()
 
@@ -156,7 +158,8 @@ function drawScene() {
   matrix = m4.scale(matrix, scale[0], scale[1], scale[2])
   // 设置矩阵
   gl.uniformMatrix4fv(matrixUniformLocation, false, matrix)
-
+  // 设置 fudgeFactor
+  gl.uniform1f(fudgeLocation, fudgeFactor)
   // 绘制
   const primitiveType = gl.TRIANGLES
   const count = 16 * 2 * 3 // 16个矩形, 一个矩形2个三角形, 3个顶点, 总共96个点
@@ -172,9 +175,9 @@ function updatePosition(index) {
 
 function updateRotation(index) {
   return function (event, ui) {
-      const angleInDegrees = ui.value;
-      const angleInRadians = (angleInDegrees * Math.PI) / 180;
-      rotation[index] = angleInRadians
+    const angleInDegrees = ui.value;
+    const angleInRadians = (angleInDegrees * Math.PI) / 180;
+    rotation[index] = angleInRadians
     drawScene()
   }
 }
