@@ -5,6 +5,7 @@ import '../../styles/index.css'
 import '../../styles/webgl-tutorials.css'
 import './index.css'
 
+
 const canvas = document.querySelector('#canvas')
 
 /**
@@ -23,7 +24,6 @@ const positionLocation = gl.getAttribLocation(program, 'a_position')
 const colorLocation = gl.getAttribLocation(program, 'a_color')
 // look up uniforms
 const matrixUniformLocation = gl.getUniformLocation(program, 'u_matrix')
-const fudgeLocation = gl.getUniformLocation(program, 'u_fudgeFactor')
 
 const positionBuffer = gl.createBuffer()
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
@@ -41,70 +41,78 @@ function degToRad(d) {
   return (d * Math.PI) / 180
 }
 
-const translation = [45, 150, 0]
-const rotation = [degToRad(40), degToRad(25), degToRad(325)]
+const translation = [-150, 0, -360]
+const rotation = [degToRad(190), degToRad(40), degToRad(320)]
 const scale = [1, 1, 1]
-const color = [Math.random(), Math.random(), Math.random(), 1]
-const fudgeFactor = 1
+let fieldOfViewRadians = degToRad(60)
 
 drawScene()
 
 // Setup a ui.
-// Setup a ui.
-webglLessonsUI.setupSlider('#x', {
-  value: translation[0],
-  slide: updatePosition(0),
-  max: gl.canvas.width,
-})
-webglLessonsUI.setupSlider('#y', {
-  value: translation[1],
-  slide: updatePosition(1),
-  max: gl.canvas.height,
-})
-webglLessonsUI.setupSlider('#z', {
-  value: translation[2],
-  slide: updatePosition(2),
-  max: gl.canvas.height,
-})
-webglLessonsUI.setupSlider('#angleX', {
-  value: radToDeg(rotation[0]),
-  slide: updateRotation(0),
-  max: 360,
-})
-webglLessonsUI.setupSlider('#angleY', {
-  value: radToDeg(rotation[1]),
-  slide: updateRotation(1),
-  max: 360,
-})
-webglLessonsUI.setupSlider('#angleZ', {
-  value: radToDeg(rotation[2]),
-  slide: updateRotation(2),
-  max: 360,
-})
-webglLessonsUI.setupSlider('#scaleX', {
+webglLessonsUI.setupSlider("#fieldOfView", {
+  value: radToDeg(fieldOfViewRadians),
+  slide: updateFieldOfView,
+  min: 1,
+  max: 179
+});
+webglLessonsUI.setupSlider("#x", {value: translation[0], slide: updatePosition(0), min: -200, max: 200});
+webglLessonsUI.setupSlider("#y", {value: translation[1], slide: updatePosition(1), min: -200, max: 200});
+webglLessonsUI.setupSlider("#z", {value: translation[2], slide: updatePosition(2), min: -1000, max: 0});
+webglLessonsUI.setupSlider("#angleX", {value: radToDeg(rotation[0]), slide: updateRotation(0), max: 360});
+webglLessonsUI.setupSlider("#angleY", {value: radToDeg(rotation[1]), slide: updateRotation(1), max: 360});
+webglLessonsUI.setupSlider("#angleZ", {value: radToDeg(rotation[2]), slide: updateRotation(2), max: 360});
+webglLessonsUI.setupSlider("#scaleX", {
   value: scale[0],
   slide: updateScale(0),
   min: -5,
   max: 5,
   step: 0.01,
-  precision: 2,
-})
-webglLessonsUI.setupSlider('#scaleY', {
+  precision: 2
+});
+webglLessonsUI.setupSlider("#scaleY", {
   value: scale[1],
   slide: updateScale(1),
   min: -5,
   max: 5,
   step: 0.01,
-  precision: 2,
-})
-webglLessonsUI.setupSlider('#scaleZ', {
+  precision: 2
+});
+webglLessonsUI.setupSlider("#scaleZ", {
   value: scale[2],
   slide: updateScale(2),
   min: -5,
   max: 5,
   step: 0.01,
-  precision: 2,
-})
+  precision: 2
+});
+
+function updateFieldOfView(event, ui) {
+  fieldOfViewRadians = degToRad(ui.value)
+  drawScene()
+}
+
+function updatePosition(index) {
+  return function (event, ui) {
+    translation[index] = ui.value
+    drawScene()
+  }
+}
+
+function updateRotation(index) {
+  return function (event, ui) {
+    const angleInDegrees = ui.value
+    const angleInRadians = (angleInDegrees * Math.PI) / 180
+    rotation[index] = angleInRadians
+    drawScene()
+  }
+}
+
+function updateScale(index) {
+  return function (event, ui) {
+    scale[index] = ui.value
+    drawScene()
+  }
+}
 
 function drawScene() {
   // 调整画布（canvas）的尺寸以匹配它的显示尺寸
@@ -143,14 +151,10 @@ function drawScene() {
   gl.vertexAttribPointer(colorLocation, 3, gl.UNSIGNED_BYTE, true, 0, 0)
 
   // 计算矩阵
-  let matrix = m4.orthographic(
-    0,
-    gl.canvas.clientWidth,
-    gl.canvas.clientHeight,
-    0,
-    400,
-    -400
-  )
+  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight
+  const zNear = 1
+  const zFar = 2000
+  let matrix = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar)
   matrix = m4.translate(matrix, translation[0], translation[1], translation[2])
   matrix = m4.xRotate(matrix, rotation[0])
   matrix = m4.yRotate(matrix, rotation[1])
@@ -158,35 +162,10 @@ function drawScene() {
   matrix = m4.scale(matrix, scale[0], scale[1], scale[2])
   // 设置矩阵
   gl.uniformMatrix4fv(matrixUniformLocation, false, matrix)
-  // 设置 fudgeFactor
-  gl.uniform1f(fudgeLocation, fudgeFactor)
   // 绘制
   const primitiveType = gl.TRIANGLES
   const count = 16 * 2 * 3 // 16个矩形, 一个矩形2个三角形, 3个顶点, 总共96个点
   gl.drawArrays(primitiveType, 0, count)
-}
-
-function updatePosition(index) {
-  return function (event, ui) {
-    translation[index] = ui.value
-    drawScene()
-  }
-}
-
-function updateRotation(index) {
-  return function (event, ui) {
-    const angleInDegrees = ui.value;
-    const angleInRadians = (angleInDegrees * Math.PI) / 180;
-    rotation[index] = angleInRadians
-    drawScene()
-  }
-}
-
-function updateScale(index) {
-  return function (event, ui) {
-    scale[index] = ui.value
-    drawScene()
-  }
 }
 
 // 在缓冲存储构成 'F' 的值

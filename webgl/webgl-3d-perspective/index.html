@@ -9,6 +9,7 @@
       body {
         margin: 0;
       }
+
       canvas {
         width: 100vw;
         height: 100vh;
@@ -20,36 +21,28 @@
     <canvas id="canvas"></canvas>
     <div id="uiContainer">
       <div id="ui">
+        <div id="fieldOfView"></div>
         <div id="x"></div>
         <div id="y"></div>
         <div id="z"></div>
         <div id="angleX"></div>
         <div id="angleY"></div>
         <div id="angleZ"></div>
-        <div id="scaleX"></div>
-        <div id="scaleY"></div>
-        <div id="scaleZ"></div>
       </div>
     </div>
     <script id="vertex-shader-3d" type="x-shader/x-vertex">
       attribute vec4 a_position;
       attribute vec4 a_color;
-
+      
       uniform mat4 u_matrix;
-      uniform float u_fudgeFactor;
 
       varying vec4 v_color;
 
       void main() {
         // 将位置与矩阵相乘
-        vec4 position = u_matrix * a_position;
+        gl_Position = u_matrix * a_position;
 
-        // 调整除数
-        float zToDivideBy = 1.0 + position.z * u_fudgeFactor;
-
-        // x 和 y 除以调整后的除数
-        gl_Position = vec4(position.xy / zToDivideBy, position.zw);
-
+        // 将颜色传递给片段着色器
         v_color = a_color;
       }
     </script>
