@@ -1341,6 +1341,17 @@ function inverse(m, dst) {
   return dst
 }
 
+function vectorMultiply(v, m) {
+  var dst = [];
+  for (var i = 0; i < 4; ++i) {
+    dst[i] = 0.0;
+    for (var j = 0; j < 4; ++j) {
+      dst[i] += v[j] * m[j * 4 + i];
+    }
+  }
+  return dst;
+}
+
 /**
  * Takes a  matrix and a vector with 4 entries, transforms that vector by
  * the matrix, and returns the result as a vector with 4 entries.
@@ -1506,6 +1517,7 @@ export default {
   scale,
   multiply,
   inverse,
+  vectorMultiply,
   transformVector,
   transformPoint,
   transformDirection,
